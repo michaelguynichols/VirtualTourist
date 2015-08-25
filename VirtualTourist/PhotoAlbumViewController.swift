@@ -48,7 +48,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         super.viewWillAppear(animated)
 
         // Toggle buttons during download
-        self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
+        
         flickrAPICall()
         
     }
@@ -166,6 +166,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
         if let pin = pin {
             if pin.photos.isEmpty {
+                
+                // Toggle buttons during download
+                self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
+                
                 var flickr = FlickrAPI(lat: pin.latitude as! Double, lon: pin.longitude as! Double)
                 flickr.search() {JSONResult, error in
                     if let error = error {
@@ -268,9 +272,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     // Delete current photos and grab new Flickr photos
     @IBAction func reloadPhotos(sender: UIBarButtonItem) {
-        
-        // Toggle buttons during download
-        self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
         
         deleteAllPhotos() { result in
             if result {
