@@ -190,7 +190,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                                 self.collectionViewHelper.reloadData()
                                 
                                 // Adding a brief delay to ensure enough time for photos to download.
-                                let delay = 0.5 * Double(NSEC_PER_SEC)
+                                let delay = 1 * Double(NSEC_PER_SEC)
                                 let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
                                 dispatch_after(time, dispatch_get_main_queue()) {
                                     self.toggleButtonsDuringDownload(true, navButtonStatus: false, downloadProgress: false)
@@ -272,6 +272,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     // Delete current photos and grab new Flickr photos
     @IBAction func reloadPhotos(sender: UIBarButtonItem) {
+        
+        // Toggle buttons during download
+        self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
         
         deleteAllPhotos() { result in
             if result {
