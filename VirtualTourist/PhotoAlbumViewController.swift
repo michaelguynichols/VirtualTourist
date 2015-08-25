@@ -46,8 +46,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-
-        // Toggle buttons during download
         
         flickrAPICall()
         
