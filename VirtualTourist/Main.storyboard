@@ -78,6 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="412.5" y="349"/>
         </scene>
         <!--Photo Album View Controller-->
         <scene sceneID="dXZ-sV-htw">
@@ -159,12 +160,12 @@
                                                 <exclude reference="9ZP-8f-c13"/>
                                             </mask>
                                             <mask key="constraints">
+                                                <exclude reference="2zS-aV-RjD"/>
+                                                <exclude reference="KS8-mx-Dq5"/>
                                                 <exclude reference="VwV-NJ-Ik7"/>
                                                 <exclude reference="bca-RX-gl8"/>
                                                 <exclude reference="mMA-WA-nwE"/>
                                                 <exclude reference="zud-d5-MNT"/>
-                                                <exclude reference="2zS-aV-RjD"/>
-                                                <exclude reference="KS8-mx-Dq5"/>
                                             </mask>
                                         </variation>
                                         <variation key="widthClass=compact">
@@ -173,12 +174,12 @@
                                                 <include reference="9ZP-8f-c13"/>
                                             </mask>
                                             <mask key="constraints">
+                                                <include reference="2zS-aV-RjD"/>
+                                                <include reference="KS8-mx-Dq5"/>
                                                 <include reference="VwV-NJ-Ik7"/>
                                                 <include reference="bca-RX-gl8"/>
                                                 <include reference="mMA-WA-nwE"/>
                                                 <include reference="zud-d5-MNT"/>
-                                                <include reference="2zS-aV-RjD"/>
-                                                <include reference="KS8-mx-Dq5"/>
                                             </mask>
                                         </variation>
                                         <connections>
@@ -249,7 +250,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JOF-cg-eJG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1428" y="346"/>
+            <point key="canvasLocation" x="1191" y="349"/>
         </scene>
     </scenes>
     <resources>

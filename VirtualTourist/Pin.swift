@@ -24,15 +24,18 @@ class Pin: NSManagedObject, MKAnnotation {
     
     init(lat: Double, lon: Double, context: NSManagedObjectContext) {
         
+        // Core data
         let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
         
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
+        // Grabbing the latitude and longitude of the pin
         latitude = NSNumber(double: lat)
         longitude = NSNumber(double: lon)
         
     }
     
+    // variable to adhere to MKAnnotation - to be able to call up 2d coords
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude as Double, longitude: longitude as Double)
     }

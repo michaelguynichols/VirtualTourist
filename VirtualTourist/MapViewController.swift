@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 
 class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
-
+    
     @IBOutlet weak var map: MKMapView!
     
     override func viewDidLoad() {
@@ -20,7 +20,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         // Declare map delegate
         map.delegate = self
         
-        // Gesture recognizer
+        // Gesture recognizer and assign dropPin method to it
         let longTapAndHoldGesture = UILongPressGestureRecognizer(target: self, action: "dropPin:")
         
         map.addGestureRecognizer(longTapAndHoldGesture)
@@ -28,35 +28,43 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         // Load all saved pins
         map.addAnnotations(fetchAllPins())
         
+        // Reload the map's saved location.
         restoreMapRegion(true)
         
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        // Hiding the navbar
         navigationController!.navigationBarHidden = true
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        // Changing navbar title for the PhotoAlbumVC
         self.navigationItem.title = "OK"
     }
     
+    // Helper property to access CoreDataStack
     var sharedContext: NSManagedObjectContext {
         return CoreDataStack.sharedInstance().managedObjectContext!
     }
     
+    // Helper function to save the context after key changes
     func saveContext() {
         CoreDataStack.sharedInstance().saveContext()
     }
     
+    // A function to drop a pin on the map if a long tap and hold
     func dropPin(gesture: UIGestureRecognizer) {
         
         if gesture.state == .Began {
-        
+            
+            // Grabbing coords
             var point = gesture.locationInView(map)
             var locCoord = map.convertPoint(point, toCoordinateFromView: map)
             
+            // Setting the annation as a pin
             let pin = Pin(lat: locCoord.latitude, lon: locCoord.longitude, context: sharedContext)
             
             map.addAnnotation(pin)
@@ -68,7 +76,8 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     }
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-        //cast pin
+        
+        // Selecting the pin to pass to the PhotoAlbumVC
         let pin = view.annotation as! Pin
         
         map.deselectAnnotation(pin, animated: false)
@@ -77,6 +86,7 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         
     }
     
+    // Fetching all the pins
     func fetchAllPins() -> [Pin] {
         let error: NSErrorPointer = nil
         
@@ -95,14 +105,15 @@ class MapViewController: UIViewController, NSFetchedResultsControllerDelegate {
         return results as! [Pin]
     }
     
+    // Helper function to push the view to the PhotoAlbumVC
     func toPhotoAlbum(pin: Pin) {
         
         var controller: PhotoAlbumViewController
-        controller = self.storyboard?.instantiateViewControllerWithIdentifier("PhotoAlbumViewController") as! PhotoAlbumViewController
+        controller = storyboard?.instantiateViewControllerWithIdentifier("PhotoAlbumViewController") as! PhotoAlbumViewController
         
-        // Getting the current pin
+        // Getting the current pin to pass on
         controller.pin = pin
-        self.navigationController!.pushViewController(controller, animated: true)
+        navigationController!.pushViewController(controller, animated: true)
     }
     
     // Here we use the same filePath strategy as the Persistent Master Detail

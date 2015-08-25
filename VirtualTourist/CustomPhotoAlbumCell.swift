@@ -14,8 +14,6 @@ class CustomPhotoAlbumCell: UICollectionViewCell {
     @IBOutlet weak var collectionImageView: UIImageView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
     
-    var imageName: String = ""
-    
     var taskToCancelifCellIsReused: NSURLSessionTask? {
         
         didSet {

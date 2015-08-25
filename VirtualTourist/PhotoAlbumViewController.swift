@@ -12,7 +12,7 @@ import MapKit
 import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
-
+    
     @IBOutlet weak var collectionViewHelper: UICollectionView!
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
@@ -23,87 +23,102 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Setting map delegate
         map.delegate = self
         
+        // Zooming in map region to passed pin's location
         setMapRegion()
         
+        // Creating the delegate and data source for the collection VC
         collectionViewHelper.delegate = self
         collectionViewHelper.dataSource = self
         
         view.addSubview(collectionViewHelper)
         
+        // Don't want the map to move
         map.scrollEnabled = false
         
-        /*// We need just to get the documents folder url
-        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0] as! NSURL
-        
-        // now lets get the directory contents (including folders)
-        if let directoryContents =  NSFileManager.defaultManager().contentsOfDirectoryAtPath(documentsUrl.path!, error: nil) {
-            println(directoryContents)
-        }
-        // if you want to filter the directory contents you can do like this:
-        if let directoryUrls =  NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsSubdirectoryDescendants, error: nil) {
-            println(directoryUrls)
-        }*/
+        // Setting fetchedResultsController delegate and performing fetch.
+        fetchedResultsController.delegate = self
+        fetchedResultsController.performFetch(nil)
         
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        if pin!.photos.isEmpty {
-            self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
-            flickrAPICall()
-        }
 
+        // Toggle buttons during download
+        self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
+        flickrAPICall()
+        
     }
     
+    // Convenient property to access core data
     var sharedContext: NSManagedObjectContext {
         return CoreDataStack.sharedInstance().managedObjectContext!
     }
     
+    // Helper function to save the context on changes
     func saveContext() {
         CoreDataStack.sharedInstance().saveContext()
     }
     
+    // Returning the number of objects in the collection
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pin!.photos.count
+        let sectionInfo = fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+        return sectionInfo.numberOfObjects
     }
     
+    // Configuring sell at each index
     func collectionView(collectionView: UICollectionView,
-    cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-        let photo = pin!.photos[indexPath.row]
-        let CellIdentifier = "photoCell"
-        
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath) as! CustomPhotoAlbumCell
-        
-        cell.activity.hidesWhenStopped = true
-        
-        configureCell(cell, photo: photo)
-        
-        return cell
+        cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+            
+            let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+            let CellIdentifier = "photoCell"
+            
+            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath) as! CustomPhotoAlbumCell
+            
+            cell.activity.hidesWhenStopped = true
+            
+            cell.activity.startAnimating()
+            
+            configureCell(cell, photo: photo)
+            
+            return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath:NSIndexPath)
-    {
+    // Allow deletion only if download from Flickr completed
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if !downloadInProgress {
-            let photo = pin!.photos[indexPath.row]
-        
+            let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
             deletePhoto(photo)
+        }
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         
-            saveContext()
-        
-            collectionViewHelper.reloadData()
+        if !downloadInProgress {
+            switch type {
+            case .Insert:
+                let photo = anObject as! Photo
+            case .Delete:
+                collectionViewHelper.deleteItemsAtIndexPaths([indexPath!])
+            case .Update:
+                let cell = collectionViewHelper.cellForItemAtIndexPath(indexPath!) as! CustomPhotoAlbumCell
+                let photo = controller.objectAtIndexPath(indexPath!) as! Photo
+                configureCell(cell, photo: photo)
+            default:
+                return
+            }
         }
         
     }
     
+    // Function to configure the cell depending on whether it is nil, already cached, or has a path but needs to be downloaded.
     func configureCell(cell: CustomPhotoAlbumCell, photo: Photo) {
         
         var fotoImage = UIImage(named: "placeholder")
-        
         cell.collectionImageView!.image = nil
-        cell.activity.startAnimating()
         
         if photo.imagePath == nil || photo.imagePath == "" {
             fotoImage = UIImage(named: "noImage")
@@ -112,14 +127,16 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             cell.activity.stopAnimating()
         }
             
-        else { // This is the interesting case. The movie has an image name, but it is not downloaded yet.
+        else { // Photo has an image name, but it is not downloaded yet.
             
             var flickr = FlickrAPI(lat: pin!.latitude as! Double, lon: pin!.longitude as! Double)
             
             // Start the task that will eventually download the image
             let task = flickr.taskForImage(photo.imagePath!) { data, error in
                 if let error = error {
-                    println("Photo download error: \(error.localizedDescription)")
+                    dispatch_async(dispatch_get_main_queue()) {
+                        fotoImage = UIImage(named: "noImage")
+                    }
                 }
                 
                 if let data = data {
@@ -127,27 +144,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                     // Create the image
                     let image = UIImage(data: data)
                     
-                    // update the model, so that the infrmation gets cashed
+                    // Update the model, so that the infrmation gets cached
                     photo.photoImage = image
                     
-                    // update the cell later, on the main thread
+                    // Update the cell later, on the main thread
                     dispatch_async(dispatch_get_main_queue()) {
                         cell.collectionImageView!.image = image
                         cell.activity.stopAnimating()
                     }
-                    
                 }
             }
             
             // This is the custom property on this cell. See CustomPhotoAlbumCell for details.
             cell.taskToCancelifCellIsReused = task
         }
-        
         cell.collectionImageView!.image = fotoImage
     }
     
+    // The call to the Flickr photo search
     func flickrAPICall() {
-
+        
         if let pin = pin {
             if pin.photos.isEmpty {
                 var flickr = FlickrAPI(lat: pin.latitude as! Double, lon: pin.longitude as! Double)
@@ -157,32 +173,54 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                     } else {
                         if let result = JSONResult as? [[String: AnyObject]] {
                             
-                            // Parse the array of movies dictionaries
+                            // Parse the array of photo dictionaries in the photos array
                             var photos = result.map() { (dictionary: [String : AnyObject]) -> Photo in
                                 let photo = Photo(dictionary: dictionary, context: self.sharedContext)
-                                
                                 photo.pin = self.pin
-                                
                                 return photo
-                            }
-                            
-                            // Update the table on the main thread
-                            dispatch_async(dispatch_get_main_queue()) {
-                                self.collectionViewHelper.reloadData()
-                                self.toggleButtonsDuringDownload(true, navButtonStatus: false, downloadProgress: false)
                             }
                             
                             self.saveContext()
                             
+                            dispatch_async(dispatch_get_main_queue()) {
+                                self.collectionViewHelper.reloadData()
+                                
+                                // Adding a brief delay to ensure enough time for photos to download.
+                                let delay = 0.5 * Double(NSEC_PER_SEC)
+                                let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                                dispatch_after(time, dispatch_get_main_queue()) {
+                                    self.toggleButtonsDuringDownload(true, navButtonStatus: false, downloadProgress: false)
+                                }
+                                
+                            }
+                            
                         }
                     }
                 }
-
             }
         }
     }
     
+    // NSFetchedResultsController
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imagePath", ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin!);
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        
+        return fetchedResultsController
+        
+        }()
+    
+    // Helper function to set map's region to the same as the pin's and zoom in
     func setMapRegion() {
+        
         if let pin = pin {
             
             var location = CLLocationCoordinate2D(
@@ -197,35 +235,81 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             map.setRegion(region, animated: true)
         }
-
+        
     }
     
+    // Explicitly delete a photo from the cache and context
     func deletePhoto(photo: Photo) {
+        cache.deletePhotoCache(photo)
         sharedContext.deleteObject(photo)
-        cache.deleteImage(photo.fileName)
-    }
-    
-    func deleteAllPhotos() {
-        for photo in pin!.photos {
-            deletePhoto(photo)
-            println(pin!.photos.count)
-        }
-        println(pin!.photos.count)
         saveContext()
     }
     
-    @IBAction func reloadPhotos(sender: UIBarButtonItem) {
-        deleteAllPhotos()
+    // Explicitly delete all photos
+    func deleteAllPhotos(completionHandler: (result: Bool) -> Void) {
+        for photo in pin!.photos {
+            deletePhoto(photo)
+        }
+        
         if pin!.photos.isEmpty {
-            self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
-            flickrAPICall()
+            completionHandler(result: true)
+        } else {
+            completionHandler(result: false)
         }
     }
     
+    // Reload collection view if changes occur
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.collectionViewHelper.reloadData()
+        }
+        
+    }
+    
+    // Delete current photos and grab new Flickr photos
+    @IBAction func reloadPhotos(sender: UIBarButtonItem) {
+        
+        // Toggle buttons during download
+        self.toggleButtonsDuringDownload(false, navButtonStatus: true, downloadProgress: true)
+        
+        deleteAllPhotos() { result in
+            if result {
+                self.flickrAPICall()
+            } else {
+                println("error")
+            }
+        }
+        
+    }
+    
+    // Helper function to enable / disable buttons during download.
     func toggleButtonsDuringDownload(newCollectionStatus: Bool, navButtonStatus: Bool, downloadProgress: Bool) {
+        downloadInProgress = downloadProgress
         newCollectionButton.enabled = newCollectionStatus
         navigationItem.setHidesBackButton(navButtonStatus, animated: true)
-        downloadInProgress = downloadProgress
+        
+        toggleButtonTitle()
+    }
+    
+    // Helper function to change title during download.
+    func toggleButtonTitle() {
+        if downloadInProgress {
+            newCollectionButton.title = "Download in Progress"
+        } else {
+            newCollectionButton.title = "New Collection"
+        }
+    }
+    
+    // Helper function to make sure all photos are deleted from the cache - for debugging.
+    func printFiles() {
+        // Get the documents folder url
+        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0] as! NSURL
+        
+        // Get the directory contents (including folders)
+        if let directoryContents =  NSFileManager.defaultManager().contentsOfDirectoryAtPath(documentsUrl.path!, error: nil) {
+            println(directoryContents)
+        }
+        
     }
     
 }

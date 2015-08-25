@@ -34,12 +34,13 @@ class Photo : NSManagedObject {
             imagePath = imageURL
         }
         
+        // unique flickr image id that will be used to store the photo
         fileName = dictionary["id"] as! String
         
     }
     
     var photoImage: UIImage? {
-        
+        // getter and setter to handle putting new images in the cache and calling those already in it
         get {
             return FlickrAPI.Caches.imageCache.imageWithIdentifier(fileName)
         }

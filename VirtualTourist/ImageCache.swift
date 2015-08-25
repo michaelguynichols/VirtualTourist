@@ -46,7 +46,6 @@ class ImageCache {
     
     func storeImage(image: UIImage?, withIdentifier identifier: String) {
         let path = pathForIdentifier(identifier)
-        
         // If the image is nil, remove images from the cache
         if image == nil {
             inMemoryCache.removeObjectForKey(path)
@@ -62,13 +61,19 @@ class ImageCache {
         data.writeToFile(path, atomically: true)
     }
     
-    func deleteImage(identifier: String) {
-        let path = pathForIdentifier(identifier)
-        inMemoryCache.removeObjectForKey(path)
-        NSFileManager.defaultManager().removeItemAtPath(path, error: nil)
+    // Explicitly delete the photo form the cache and file manager
+    func deletePhotoCache(photo: Photo) {
+        photo.photoImage = nil
+        photo.imagePath = nil
+        photo.pin = nil
+        let path = pathForIdentifier(photo.fileName)
+        if let data = NSData(contentsOfFile: path) {
+            NSFileManager.defaultManager().delete(UIImage(data: data))
+        }
+        
     }
     
-    // MARK: - Helper
+    // MARK: - Helper function to get the path of the photo
     
     func pathForIdentifier(identifier: String) -> String {
         let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
