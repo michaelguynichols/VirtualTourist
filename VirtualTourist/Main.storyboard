@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="UAq-5R-mfA">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="Ryv-wI-NhJ">
+            <objects>
+                <navigationController hidesBarsWhenVerticallyCompact="YES" id="UAq-5R-mfA" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="2WC-Cd-D88">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="rootViewController" id="UsT-JQ-1TA"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IXe-Ft-sX2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-367.5" y="349"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="MapViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="NCw-A5-QY9">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <connections>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="yrb-w9-Py4"/>
+                                </connections>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="NCw-A5-QY9" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="topMargin" id="1Ye-fZ-Rvf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="NCw-A5-QY9" secondAttribute="trailing" constant="-16" id="GMc-fg-Xaa"/>
+                            <constraint firstItem="NCw-A5-QY9" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-16" id="TOs-K3-Uvs"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="NCw-A5-QY9" secondAttribute="bottom" id="crT-x6-UPv"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="NCw-A5-QY9"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="crT-x6-UPv"/>
+                                <exclude reference="1Ye-fZ-Rvf"/>
+                                <exclude reference="GMc-fg-Xaa"/>
+                                <exclude reference="TOs-K3-Uvs"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="NCw-A5-QY9"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="crT-x6-UPv"/>
+                                <include reference="1Ye-fZ-Rvf"/>
+                                <include reference="GMc-fg-Xaa"/>
+                                <include reference="TOs-K3-Uvs"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" id="Wd5-Jy-np4"/>
+                    <connections>
+                        <outlet property="map" destination="NCw-A5-QY9" id="UEj-qp-FWc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+        <!--Photo Album View Controller-->
+        <scene sceneID="dXZ-sV-htw">
+            <objects>
+                <viewController storyboardIdentifier="PhotoAlbumViewController" automaticallyAdjustsScrollViewInsets="NO" id="tzm-vy-zBy" customClass="PhotoAlbumViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Zcz-ut-oSx"/>
+                        <viewControllerLayoutGuide type="bottom" id="1YZ-9g-XBb"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Lmp-du-U6T">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iy3-l1-bch">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Hm8-Wl-eAk"/>
+                                    <barButtonItem title="New Collection" id="eek-IO-7Kj">
+                                        <connections>
+                                            <action selector="reloadPhotos:" destination="tzm-vy-zBy" id="9sJ-MP-CsM"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="dy5-cc-I9i"/>
+                                </items>
+                            </toolbar>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1IN-cu-nbI">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="iBV-cF-HNd"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="iBV-cF-HNd"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="iBV-cF-HNd"/>
+                                    </mask>
+                                </variation>
+                            </mapView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="GhP-PF-lMp">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="OPq-bB-wPX">
+                                    <size key="itemSize" width="118" height="114"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="photoCell" id="SrI-jp-p6U" customClass="CustomPhotoAlbumCell" customModule="VirtualTourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="118" height="114"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="1DB-Oc-FIb">
+                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9ZP-8f-c13">
+                                                    <rect key="frame" x="-10" y="-10" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstItem="9ZP-8f-c13" firstAttribute="centerY" secondItem="1DB-Oc-FIb" secondAttribute="centerY" id="2zS-aV-RjD"/>
+                                            <constraint firstItem="9ZP-8f-c13" firstAttribute="centerX" secondItem="1DB-Oc-FIb" secondAttribute="centerX" id="KS8-mx-Dq5"/>
+                                            <constraint firstAttribute="bottom" secondItem="1DB-Oc-FIb" secondAttribute="bottom" id="VwV-NJ-Ik7"/>
+                                            <constraint firstItem="1DB-Oc-FIb" firstAttribute="top" secondItem="SrI-jp-p6U" secondAttribute="top" id="bca-RX-gl8"/>
+                                            <constraint firstAttribute="trailing" secondItem="1DB-Oc-FIb" secondAttribute="trailing" id="mMA-WA-nwE"/>
+                                            <constraint firstItem="1DB-Oc-FIb" firstAttribute="leading" secondItem="SrI-jp-p6U" secondAttribute="leading" id="zud-d5-MNT"/>
+                                        </constraints>
+                                        <variation key="default">
+                                            <mask key="subviews">
+                                                <exclude reference="1DB-Oc-FIb"/>
+                                                <exclude reference="9ZP-8f-c13"/>
+                                            </mask>
+                                            <mask key="constraints">
+                                                <exclude reference="VwV-NJ-Ik7"/>
+                                                <exclude reference="bca-RX-gl8"/>
+                                                <exclude reference="mMA-WA-nwE"/>
+                                                <exclude reference="zud-d5-MNT"/>
+                                                <exclude reference="2zS-aV-RjD"/>
+                                                <exclude reference="KS8-mx-Dq5"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="widthClass=compact">
+                                            <mask key="subviews">
+                                                <include reference="1DB-Oc-FIb"/>
+                                                <include reference="9ZP-8f-c13"/>
+                                            </mask>
+                                            <mask key="constraints">
+                                                <include reference="VwV-NJ-Ik7"/>
+                                                <include reference="bca-RX-gl8"/>
+                                                <include reference="mMA-WA-nwE"/>
+                                                <include reference="zud-d5-MNT"/>
+                                                <include reference="2zS-aV-RjD"/>
+                                                <include reference="KS8-mx-Dq5"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <outlet property="activity" destination="9ZP-8f-c13" id="L4X-i4-5uA"/>
+                                            <outlet property="collectionImageView" destination="1DB-Oc-FIb" id="gS6-5F-lPK"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="1IN-cu-nbI" firstAttribute="leading" secondItem="GhP-PF-lMp" secondAttribute="leading" id="6Au-Q6-lek"/>
+                            <constraint firstItem="Iy3-l1-bch" firstAttribute="bottom" secondItem="1YZ-9g-XBb" secondAttribute="top" id="8lK-Jh-LS0"/>
+                            <constraint firstItem="1IN-cu-nbI" firstAttribute="trailing" secondItem="GhP-PF-lMp" secondAttribute="trailing" id="A9h-hd-0tC"/>
+                            <constraint firstAttribute="trailing" secondItem="Iy3-l1-bch" secondAttribute="trailing" id="AGK-BU-adY"/>
+                            <constraint firstItem="Iy3-l1-bch" firstAttribute="top" secondItem="GhP-PF-lMp" secondAttribute="bottom" id="EDh-F5-ZLw"/>
+                            <constraint firstItem="1IN-cu-nbI" firstAttribute="top" secondItem="Zcz-ut-oSx" secondAttribute="bottom" id="QLG-Tg-Bii"/>
+                            <constraint firstItem="Iy3-l1-bch" firstAttribute="leading" secondItem="GhP-PF-lMp" secondAttribute="leading" id="US0-th-yPe"/>
+                            <constraint firstItem="GhP-PF-lMp" firstAttribute="top" secondItem="1IN-cu-nbI" secondAttribute="bottom" constant="3" id="XIr-Xa-QAi"/>
+                            <constraint firstItem="GhP-PF-lMp" firstAttribute="leading" secondItem="Lmp-du-U6T" secondAttribute="leading" id="u5k-p2-Vrn"/>
+                            <constraint firstItem="GhP-PF-lMp" firstAttribute="trailing" secondItem="Iy3-l1-bch" secondAttribute="trailing" id="wmd-xI-uXO"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="Iy3-l1-bch"/>
+                                <exclude reference="1IN-cu-nbI"/>
+                                <exclude reference="GhP-PF-lMp"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="8lK-Jh-LS0"/>
+                                <exclude reference="AGK-BU-adY"/>
+                                <exclude reference="EDh-F5-ZLw"/>
+                                <exclude reference="US0-th-yPe"/>
+                                <exclude reference="6Au-Q6-lek"/>
+                                <exclude reference="A9h-hd-0tC"/>
+                                <exclude reference="QLG-Tg-Bii"/>
+                                <exclude reference="XIr-Xa-QAi"/>
+                                <exclude reference="u5k-p2-Vrn"/>
+                                <exclude reference="wmd-xI-uXO"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="Iy3-l1-bch"/>
+                                <include reference="1IN-cu-nbI"/>
+                                <include reference="GhP-PF-lMp"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="8lK-Jh-LS0"/>
+                                <include reference="AGK-BU-adY"/>
+                                <include reference="EDh-F5-ZLw"/>
+                                <include reference="US0-th-yPe"/>
+                                <include reference="6Au-Q6-lek"/>
+                                <include reference="A9h-hd-0tC"/>
+                                <include reference="QLG-Tg-Bii"/>
+                                <include reference="XIr-Xa-QAi"/>
+                                <include reference="u5k-p2-Vrn"/>
+                                <include reference="wmd-xI-uXO"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="collectionViewHelper" destination="GhP-PF-lMp" id="LO3-7Z-Ing"/>
+                        <outlet property="map" destination="1IN-cu-nbI" id="iPH-XR-niH"/>
+                        <outlet property="newCollectionButton" destination="eek-IO-7Kj" id="tRn-s1-YPC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JOF-cg-eJG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1428" y="346"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="placeholder" width="92" height="138"/>
+    </resources>
+</document>
